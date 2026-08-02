@@ -1,0 +1,25 @@
+{
+  "name": "萌宠成长乐园",
+  "short_name": "萌宠乐园",
+  "description": "激励小朋友养育小宠物的成长平台",
+  "start_url": "https://xiaojiubi.github.io/pet-garden/",
+  "scope": "https://xiaojiubi.github.io/pet-garden/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff5f7",
+  "theme_color": "#ff8fab",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
