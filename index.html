@@ -1,0 +1,2606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>萌宠成长乐园 🐰</title>
+  <style>
+/* ===== 萌宠成长乐园 - 样式 ===== */
+:root {
+  --primary: #ff8fab;
+  --primary-dark: #e5739e;
+  --secondary: #a8e6cf;
+  --secondary-dark: #7dd3ae;
+  --accent: #ffd93d;
+  --danger: #ff6b6b;
+  --warning: #ffa94d;
+  --bg: #fff5f7;
+  --card-bg: #ffffff;
+  --text: #4a4a4a;
+  --text-light: #8a8a8a;
+  --border: #ffe0e9;
+  --shadow: 0 4px 16px rgba(255, 143, 171, 0.15);
+  --radius: 18px;
+  --nav-h: 64px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", "Twemoji Mozilla", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  max-width: 520px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  user-select: none;
+}
+
+/* Emoji 强制使用彩色 emoji 字体 */
+.pet-emoji, .pet-display, .stat-icon, .action-icon, .task-icon,
+.shop-emoji, .inv-emoji, .wish-emoji, .bubble-emoji, .log-icon, .nav-icon,
+.empty-icon, .summary-value, .coins-display, .date-display {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+               "Noto Color Emoji", "Twemoji Mozilla", "EmojiOne Color",
+               "Android Emoji", sans-serif;
+  font-style: normal;
+  font-weight: normal;
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 顶部状态栏 */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(255, 143, 171, 0.3);
+}
+
+.date-display {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.coins-display {
+  font-size: 18px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.25);
+  padding: 5px 14px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+
+/* 主内容 */
+.content {
+  flex: 1;
+  padding: 16px 14px calc(var(--nav-h) + 20px);
+}
+
+/* 底部导航 */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 520px;
+  height: var(--nav-h);
+  background: #fff;
+  display: flex;
+  border-top: 1px solid var(--border);
+  z-index: 100;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.nav-btn {
+  flex: 1;
+  border: none;
+  background: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  color: var(--text-light);
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.nav-btn.active {
+  color: var(--primary);
+}
+
+.nav-icon {
+  font-size: 22px;
+}
+
+.nav-label {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* 通用卡片 */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 14px;
+}
+
+.section-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ===== 角色选择页 ===== */
+.welcome-screen {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.welcome-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--primary-dark);
+  margin-bottom: 8px;
+}
+
+.welcome-subtitle {
+  font-size: 15px;
+  color: var(--text-light);
+  margin-bottom: 24px;
+}
+
+.pet-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.pet-option {
+  background: #fff;
+  border: 3px solid transparent;
+  border-radius: var(--radius);
+  padding: 18px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s;
+  box-shadow: var(--shadow);
+}
+
+.pet-option:hover, .pet-option.selected {
+  border-color: var(--primary);
+  transform: translateY(-3px);
+}
+
+.pet-option .pet-emoji {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.pet-option .pet-name {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.pet-option .pet-desc {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+
+.name-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 16px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.name-input:focus {
+  border-color: var(--primary);
+}
+
+/* ===== 主页宠物展示 ===== */
+.pet-stage {
+  background: linear-gradient(180deg, #e8f4ff 0%, #fff0f5 100%);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.pet-stage::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: linear-gradient(180deg, transparent, rgba(168, 230, 207, 0.4));
+}
+
+/* 成长等级徽章 */
+.growth-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #ffd93d, #ffa94d);
+  color: #5a4500;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 16px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(255, 169, 77, 0.4);
+  position: relative;
+  z-index: 1;
+}
+
+/* 成长值区域 */
+.growth-section {
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin: 10px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.growth-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.growth-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.growth-exp {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.growth-track {
+  height: 10px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.growth-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #ffd93d, #ff8fab, #a8e6cf);
+  background-size: 200% 100%;
+  animation: growth-shine 3s linear infinite;
+  transition: width 0.6s ease;
+}
+
+@keyframes growth-shine {
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.growth-desc {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 6px;
+}
+
+.pet-display {
+  font-size: 100px;
+  line-height: 1.2;
+  position: relative;
+  z-index: 1;
+  animation: bounce 2s ease-in-out infinite;
+  display: inline-block;
+}
+
+.pet-display.sad {
+  animation: shake 0.5s ease-in-out;
+}
+
+.pet-display.happy {
+  animation: happy-jump 0.6s ease;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px) rotate(-5deg); }
+  75% { transform: translateX(8px) rotate(5deg); }
+}
+
+@keyframes happy-jump {
+  0% { transform: translateY(0) scale(1); }
+  40% { transform: translateY(-30px) scale(1.15); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.pet-name-label {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+
+.stat-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.stat-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 12px;
+  width: 36px;
+  font-weight: 600;
+}
+
+.stat-track {
+  flex: 1;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.stat-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.5s ease;
+}
+
+.stat-fill.mood { background: linear-gradient(90deg, #ffd93d, #ffb84d); }
+.stat-fill.hunger { background: linear-gradient(90deg, #ff8fab, #ff6b6b); }
+.stat-fill.health { background: linear-gradient(90deg, #a8e6cf, #7dd3ae); }
+
+/* 互动按钮组 */
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.action-btn {
+  background: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 8px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: all 0.2s;
+  font-family: inherit;
+  text-align: center;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-btn .action-icon {
+  font-size: 30px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.action-btn .action-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.action-btn.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ===== 任务页 ===== */
+.task-category-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.tab-btn {
+  border: none;
+  background: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--text-light);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  font-family: inherit;
+}
+
+.tab-btn.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #fff;
+  border-radius: 14px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.task-icon {
+  font-size: 26px;
+  width: 40px;
+  text-align: center;
+}
+
+.task-info {
+  flex: 1;
+}
+
+.task-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.task-desc {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.task-score {
+  font-size: 14px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 10px;
+}
+
+.task-score.positive {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.task-score.negative {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.task-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.task-btn.done {
+  background: var(--secondary);
+  color: #2e7d32;
+}
+
+.task-btn.deduct {
+  background: #ffcdd2;
+  color: #c62828;
+}
+
+.task-actions-edit {
+  display: flex;
+  gap: 6px;
+}
+
+.edit-btn, .delete-btn {
+  border: none;
+  background: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+.add-task-btn {
+  width: 100%;
+  border: 2px dashed var(--primary);
+  background: transparent;
+  color: var(--primary);
+  padding: 12px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  margin-top: 8px;
+}
+
+/* ===== 商店页 ===== */
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.shop-item {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+.shop-item .shop-emoji {
+  font-size: 42px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.shop-item .shop-name {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.shop-item .shop-price {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 8px;
+}
+
+.shop-item .shop-type {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-bottom: 6px;
+}
+
+.buy-btn {
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  padding: 7px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  width: 100%;
+}
+
+.buy-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.inventory-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: var(--accent);
+  color: #5a4500;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+/* ===== 库存选择弹窗 ===== */
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.inv-item {
+  text-align: center;
+  padding: 12px 6px;
+  border-radius: 12px;
+  background: #f9f9f9;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.inv-item:hover {
+  border-color: var(--primary);
+  background: #fff5f7;
+}
+
+.inv-item.empty-msg {
+  grid-column: 1 / -1;
+  background: none;
+  color: var(--text-light);
+  font-size: 14px;
+}
+
+.inv-emoji {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.inv-name {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.inv-count {
+  font-size: 11px;
+  color: var(--text-light);
+}
+
+/* ===== 报表页 ===== */
+.report-summary {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.summary-card {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 16px;
+  text-align: center;
+}
+
+.summary-card.alt {
+  background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+}
+
+.summary-value {
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.summary-label {
+  font-size: 12px;
+  opacity: 0.9;
+  margin-top: 4px;
+}
+
+.week-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 140px;
+  padding: 10px 4px;
+  gap: 6px;
+}
+
+.bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.bar {
+  width: 100%;
+  max-width: 32px;
+  background: linear-gradient(180deg, var(--primary), var(--primary-dark));
+  border-radius: 6px 6px 0 0;
+  min-height: 4px;
+  transition: height 0.6s ease;
+  position: relative;
+}
+
+.bar.negative {
+  background: linear-gradient(180deg, var(--danger), #c62828);
+}
+
+.bar-value {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text);
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.bar-label {
+  font-size: 11px;
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+.log-list {
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.log-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+}
+
+.log-time {
+  color: var(--text-light);
+  font-size: 11px;
+  width: 50px;
+}
+
+.log-icon {
+  font-size: 18px;
+}
+
+.log-title {
+  flex: 1;
+  font-weight: 500;
+}
+
+.log-score {
+  font-weight: 700;
+}
+
+.log-score.positive { color: #2e7d32; }
+.log-score.negative { color: #c62828; }
+
+/* ===== 心愿页 ===== */
+.total-score-banner {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 18px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.total-score-banner .total-value {
+  font-size: 36px;
+  font-weight: 800;
+}
+
+.total-score-banner .total-label {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.wish-item {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wish-emoji {
+  font-size: 32px;
+}
+
+.wish-info {
+  flex: 1;
+}
+
+.wish-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.wish-cost {
+  font-size: 13px;
+  color: var(--primary-dark);
+  font-weight: 700;
+}
+
+.wish-btn {
+  border: none;
+  background: var(--accent);
+  color: #5a4500;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.wish-btn:disabled {
+  background: #ddd;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.wish-redeemed {
+  background: #f0f0f0;
+  color: #999;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+/* ===== 弹窗 ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: modalIn 0.3s ease;
+}
+
+@keyframes modalIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-title {
+  font-size: 19px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.modal-field {
+  margin-bottom: 14px;
+}
+
+.modal-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.modal-field input,
+.modal-field select,
+.modal-field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+}
+
+.modal-field input:focus,
+.modal-field select:focus {
+  border-color: var(--primary);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn {
+  flex: 1;
+  border: none;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-cancel {
+  background: #f0f0f0;
+  color: var(--text-light);
+}
+
+/* ===== Toast ===== */
+.toast {
+  position: fixed;
+  bottom: calc(var(--nav-h) + 20px);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 300;
+  opacity: 0;
+  transition: all 0.3s;
+  white-space: nowrap;
+  max-width: 90%;
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ===== 宠物气泡 ===== */
+.pet-bubble {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: #fff;
+  padding: 16px 24px;
+  border-radius: 20px;
+  font-size: 20px;
+  font-weight: 700;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  z-index: 250;
+  transition: transform 0.3s;
+  text-align: center;
+}
+
+.pet-bubble.show {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.pet-bubble .bubble-emoji {
+  font-size: 50px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-light);
+}
+
+.empty-state .empty-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+/* 响应式 */
+@media (max-width: 380px) {
+  .pet-display { font-size: 80px; }
+  .welcome-title { font-size: 24px; }
+}
+
+</style>
+</head>
+<body>
+  <div id="app">
+    <!-- 顶部状态栏 -->
+    <header class="top-bar">
+      <div class="date-display" id="dateDisplay">📅 加载中...</div>
+      <div class="coins-display" id="coinsDisplay">🪙 0</div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="content" id="mainContent">
+      <!-- 各页面动态渲染 -->
+    </main>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-nav">
+      <button class="nav-btn active" data-page="home" onclick="navigate('home')">
+        <span class="nav-icon">🏠</span><span class="nav-label">主页</span>
+      </button>
+      <button class="nav-btn" data-page="tasks" onclick="navigate('tasks')">
+        <span class="nav-icon">📋</span><span class="nav-label">任务</span>
+      </button>
+      <button class="nav-btn" data-page="shop" onclick="navigate('shop')">
+        <span class="nav-icon">🛒</span><span class="nav-label">商店</span>
+      </button>
+      <button class="nav-btn" data-page="report" onclick="navigate('report')">
+        <span class="nav-icon">📊</span><span class="nav-label">报表</span>
+      </button>
+      <button class="nav-btn" data-page="wishes" onclick="navigate('wishes')">
+        <span class="nav-icon">🌟</span><span class="nav-label">心愿</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- 通用弹窗 -->
+  <div class="modal-overlay" id="modalOverlay" style="display:none;">
+    <div class="modal" id="modalContent"></div>
+  </div>
+
+  <!-- Toast 提示 -->
+  <div class="toast" id="toast" style="display:none;"></div>
+
+  <!-- 宠物反应气泡 -->
+  <div class="pet-bubble" id="petBubble" style="display:none;"></div>
+
+  <script>
+/* ===== 萌宠成长乐园 - 核心逻辑 ===== */
+
+// ============ 数据存储层 ============
+const DB = {
+  get(key, def) {
+    try {
+      const v = localStorage.getItem('bunny_' + key);
+      return v ? JSON.parse(v) : def;
+    } catch { return def; }
+  },
+  set(key, val) {
+    localStorage.setItem('bunny_' + key, JSON.stringify(val));
+  }
+};
+
+// ============ 全局状态 ============
+let state = {
+  currentPage: 'home',
+  currentTaskTab: 'all',
+  editMode: false
+};
+
+// ============ 成长等级配置 ============
+// 等级越高，宠物越大；每级所需累计经验递增
+const GROWTH_LEVELS = [
+  { level: 1, name: '幼崽期',  minExp: 0,   size: 60,  badge: '🥚', desc: '刚出生，需要细心照顾' },
+  { level: 2, name: '幼年期',  minExp: 50,  size: 80,  badge: '🌱', desc: '活泼好动，正在成长' },
+  { level: 3, name: '少年期',  minExp: 150, size: 100, badge: '🌿', desc: '逐渐长大，更有活力' },
+  { level: 4, name: '成年期',  minExp: 300, size: 120, badge: '✨', desc: '完全长大啦！' },
+  { level: 5, name: '巅峰期',  minExp: 500, size: 130, badge: '👑', desc: '最强壮的状态' }
+];
+
+// 根据经验值获取当前等级信息
+function getGrowthInfo(exp) {
+  exp = exp || 0;
+  let info = GROWTH_LEVELS[0];
+  for (let i = 0; i < GROWTH_LEVELS.length; i++) {
+    if (exp >= GROWTH_LEVELS[i].minExp) {
+      info = GROWTH_LEVELS[i];
+    }
+  }
+  const nextLevel = GROWTH_LEVELS.find(l => l.level === info.level + 1);
+  const expInLevel = exp - info.minExp;
+  const expForNext = nextLevel ? (nextLevel.minExp - info.minExp) : 0;
+  const progress = nextLevel ? Math.min(100, (expInLevel / expForNext) * 100) : 100;
+  return {
+    ...info,
+    exp: exp,
+    expInLevel: expInLevel,
+    expForNext: expForNext,
+    nextLevel: nextLevel,
+    progress: progress,
+    isMax: !nextLevel
+  };
+}
+
+// 增加经验值并检查升级
+function addExp(amount) {
+  const pet = DB.get('pet');
+  const oldInfo = getGrowthInfo(pet.exp || 0);
+  pet.exp = (pet.exp || 0) + amount;
+  DB.set('pet', pet);
+  const newInfo = getGrowthInfo(pet.exp);
+  // 升级了
+  if (newInfo.level > oldInfo.level) {
+    setTimeout(() => {
+      showPetReaction(pet.emoji, `长大了！${newInfo.badge}${newInfo.name}`, 'happy');
+      Sound.play('levelup');
+      toast(`🎉 ${pet.name}成长到「${newInfo.name}」了！`);
+    }, 800);
+  }
+}
+
+// ============ 宠物角色定义 ============
+const PETS = [
+  { type: 'bunny', emoji: '🐰', name: '小兔子', desc: '软萌可爱，爱吃胡萝卜' },
+  { type: 'cat',   emoji: '🐱', name: '小猫咪', desc: '傲娇粘人，爱玩毛线球' },
+  { type: 'dog',   emoji: '🐶', name: '小狗狗', desc: '忠诚活泼，爱啃骨头' },
+  { type: 'bear',  emoji: '🐻', name: '小熊熊', desc: '憨厚温暖，爱吃蜂蜜' }
+];
+
+// ============ 默认任务项 ============
+const DEFAULT_TASKS = [
+  // 加分 - 学习类
+  { id: 't1', cat: 'study', type: 'positive', icon: '✏️', title: '控笔练习', desc: '认真完成控笔练习', score: 5 },
+  { id: 't2', cat: 'study', type: 'positive', icon: '📖', title: '看书阅读', desc: '安静看15分钟绘本', score: 8 },
+  { id: 't3', cat: 'study', type: 'positive', icon: '🔤', title: '幼小衔接练习', desc: '完成一页衔接练习', score: 10 },
+  { id: 't4', cat: 'study', type: 'positive', icon: '🎨', title: '画画创作', desc: '认真画一幅画', score: 6 },
+  // 加分 - 家务类
+  { id: 't5', cat: 'house', type: 'positive', icon: '🍽️', title: '洗碗', desc: '帮妈妈洗碗', score: 8 },
+  { id: 't6', cat: 'house', type: 'positive', icon: '☀️', title: '晒衣服', desc: '帮忙晒衣服', score: 6 },
+  { id: 't7', cat: 'house', type: 'positive', icon: '🧹', title: '打扫卫生', desc: '打扫自己的房间', score: 7 },
+  // 加分 - 运动类
+  { id: 't8', cat: 'sport', type: 'positive', icon: '🤸', title: '跳绳', desc: '跳绳50下', score: 8 },
+  { id: 't9', cat: 'sport', type: 'positive', icon: '🚶', title: '散步', desc: '户外散步20分钟', score: 5 },
+  // 扣分项
+  { id: 't10', cat: 'penalty', type: 'negative', icon: '📺', title: '超时看电视', desc: '看电视超过约定时间', score: -5 },
+  { id: 't11', cat: 'penalty', type: 'negative', icon: '📝', title: '未完成作业', desc: '没有按时完成作业', score: -8 },
+  { id: 't12', cat: 'penalty', type: 'negative', icon: '🤥', title: '欺骗撒谎', desc: '说了谎话', score: -10 },
+  { id: 't13', cat: 'penalty', type: 'negative', icon: '😤', title: '和哥哥吵架', desc: '无故和哥哥吵架', score: -6 }
+];
+
+// ============ 默认商店商品 ============
+const DEFAULT_SHOP = [
+  { id: 's1', type: 'food', icon: '🥕', name: '胡萝卜', price: 5 },
+  { id: 's2', type: 'food', icon: '🥬', name: '白菜', price: 3 },
+  { id: 's3', type: 'food', icon: '🍎', name: '苹果', price: 4 },
+  { id: 's4', type: 'food', icon: '🍓', name: '草莓', price: 6 },
+  { id: 's5', type: 'food', icon: '🍪', name: '小饼干', price: 8 },
+  { id: 's6', type: 'food', icon: '🥛', name: '牛奶', price: 7 },
+  { id: 's7', type: 'toy', icon: '⚽', name: '小皮球', price: 12 },
+  { id: 's8', type: 'toy', icon: '🧸', name: '毛绒玩具', price: 15 },
+  { id: 's9', type: 'toy', icon: '🎈', name: '气球', price: 4 },
+  { id: 's10', type: 'toy', icon: '🪀', name: '摇摇马', price: 20 },
+  { id: 's11', type: 'medicine', icon: '💊', name: '感冒药', price: 10 },
+  { id: 's12', type: 'medicine', icon: '🌿', name: '草药', price: 8 },
+  { id: 's13', type: 'medicine', icon: '💉', name: '疫苗', price: 18 }
+];
+
+const DEFAULT_WISHES = [
+  { id: 'w1', icon: '🧩', title: '买一套拼图', cost: 100 },
+  { id: 'w2', icon: '🚲', title: '去公园骑车', cost: 150 },
+  { id: 'w3', icon: '🍦', title: '吃一次冰淇淋', cost: 50 },
+  { id: 'w4', icon: '🎠', title: '去游乐园玩', cost: 300 }
+];
+
+// ============ 初始化 ============
+function init() {
+  // 首次使用 -> 显示角色选择
+  const pet = DB.get('pet', null);
+  if (!pet) {
+    showWelcome();
+    return;
+  }
+  // 初始化默认数据
+  if (!DB.get('tasks', null)) DB.set('tasks', DEFAULT_TASKS);
+  if (!DB.get('shop', null)) DB.set('shop', DEFAULT_SHOP);
+  if (!DB.get('wishes', null)) DB.set('wishes', DEFAULT_WISHES);
+  if (!DB.get('inventory', null)) DB.set('inventory', {});
+  if (!DB.get('coins', null) && DB.get('coins', null) !== 0) DB.set('coins', 0);
+  if (!DB.get('totalScore', null) && DB.get('totalScore', null) !== 0) DB.set('totalScore', 0);
+  if (!DB.get('logs', null)) DB.set('logs', []);
+
+  updateDate();
+  updateCoins();
+  navigate('home');
+}
+
+// ============ 日期更新 ============
+function updateDate() {
+  const now = new Date();
+  const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+  const dateStr = `📅 ${now.getMonth() + 1}月${now.getDate()}日 ${days[now.getDay()]}`;
+  document.getElementById('dateDisplay').textContent = dateStr;
+}
+
+// 每分钟检查日期是否变化（跨天更新）
+setInterval(() => {
+  updateDate();
+  checkDailyReset();
+}, 60000);
+
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function checkDailyReset() {
+  // 可在此添加每日状态衰减逻辑（暂不自动衰减，避免小朋友不在时宠物状态下降）
+}
+
+// ============ 金币显示 ============
+function updateCoins() {
+  const coins = DB.get('coins', 0);
+  document.getElementById('coinsDisplay').textContent = `🪙 ${coins}`;
+}
+
+// ============ 角色选择页 ============
+function showWelcome() {
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `
+    <div class="welcome-screen">
+      <div class="welcome-title">🐰 萌宠成长乐园</div>
+      <div class="welcome-subtitle">选一个你喜欢的的小伙伴，一起成长吧！</div>
+      <div class="pet-grid" id="petGrid">
+        ${PETS.map(p => `
+          <div class="pet-option" onclick="selectPet('${p.type}')" data-type="${p.type}">
+            <span class="pet-emoji">${p.emoji}</span>
+            <div class="pet-name">${p.name}</div>
+            <div class="pet-desc">${p.desc}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="card">
+        <div class="modal-field">
+          <label>给小伙伴起个名字吧</label>
+          <input type="text" class="name-input" id="petNameInput" placeholder="输入名字..." maxlength="10">
+        </div>
+        <button class="btn btn-primary" onclick="confirmPet()" style="width:100%;">开始养育之旅 🎉</button>
+      </div>
+    </div>
+  `;
+  // 隐藏底部导航
+  document.querySelector('.bottom-nav').style.display = 'none';
+  document.querySelector('.top-bar').style.display = 'none';
+}
+
+let selectedPetType = null;
+
+function selectPet(type) {
+  selectedPetType = type;
+  document.querySelectorAll('.pet-option').forEach(el => {
+    el.classList.toggle('selected', el.dataset.type === type);
+  });
+}
+
+function confirmPet() {
+  if (!selectedPetType) {
+    toast('请先选一个小伙伴哦~');
+    return;
+  }
+  const nameInput = document.getElementById('petNameInput');
+  const name = nameInput.value.trim() || PETS.find(p => p.type === selectedPetType).name;
+  const pet = {
+    type: selectedPetType,
+    emoji: PETS.find(p => p.type === selectedPetType).emoji,
+    name: name,
+    mood: 80,
+    hunger: 80,
+    health: 90,
+    exp: 0
+  };
+  DB.set('pet', pet);
+  DB.set('tasks', DEFAULT_TASKS);
+  DB.set('shop', DEFAULT_SHOP);
+  DB.set('wishes', DEFAULT_WISHES);
+  DB.set('inventory', {});
+  DB.set('coins', 20); // 初始赠送20金币
+  DB.set('totalScore', 0);
+  DB.set('logs', []);
+  // 显示导航和顶栏
+  document.querySelector('.bottom-nav').style.display = 'flex';
+  document.querySelector('.top-bar').style.display = 'flex';
+  updateDate();
+  updateCoins();
+  navigate('home');
+  toast(`欢迎${name}！获得20金币礼物 🎁`);
+}
+
+// ============ 更换宠物（保留金币/积分/任务进度） ============
+function openPetChangeMenu() {
+  const currentPet = DB.get('pet');
+  const html = `
+    <div class="modal-title">🐾 更换小伙伴</div>
+    <div style="font-size:13px;color:var(--text-light);text-align:center;margin-bottom:14px;">
+      当前：${currentPet.emoji} ${currentPet.name}<br>
+      金币、积分、任务进度都会保留哦~
+    </div>
+    <div class="pet-grid" style="margin-bottom:16px;">
+      ${PETS.map(p => `
+        <div class="pet-option ${p.type === currentPet.type ? 'selected' : ''}" onclick="selectNewPet('${p.type}')" data-type="${p.type}">
+          <span class="pet-emoji">${p.emoji}</span>
+          <div class="pet-name">${p.name}</div>
+          <div class="pet-desc">${p.desc}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="modal-field">
+      <label>给新伙伴起个名字</label>
+      <input type="text" class="name-input" id="newPetNameInput" placeholder="输入名字..." maxlength="10" value="${currentPet.name}">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="confirmChangePet()">确认更换</button>
+    </div>
+  `;
+  showModal(html);
+}
+
+let newSelectedPetType = null;
+
+function selectNewPet(type) {
+  newSelectedPetType = type;
+  document.querySelectorAll('.modal .pet-option').forEach(el => {
+    el.classList.toggle('selected', el.dataset.type === type);
+  });
+}
+
+function confirmChangePet() {
+  if (!newSelectedPetType) {
+    toast('请先选一个小伙伴哦~');
+    return;
+  }
+  const nameInput = document.getElementById('newPetNameInput');
+  const name = nameInput.value.trim() || PETS.find(p => p.type === newSelectedPetType).name;
+  const oldPet = DB.get('pet');
+
+  // 保留成长经验和状态值，只换角色和名字
+  const pet = {
+    type: newSelectedPetType,
+    emoji: PETS.find(p => p.type === newSelectedPetType).emoji,
+    name: name,
+    mood: oldPet.mood,
+    hunger: oldPet.hunger,
+    health: oldPet.health,
+    exp: oldPet.exp || 0
+  };
+  DB.set('pet', pet);
+
+  newSelectedPetType = null;
+  closeModal();
+  navigate('home');
+  toast(`换成了${pet.emoji}${pet.name}！`);
+  Sound.play('happy');
+}
+
+// ============ 页面导航 ============
+function navigate(page) {
+  state.currentPage = page;
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.page === page);
+  });
+  const main = document.getElementById('mainContent');
+  switch (page) {
+    case 'home': main.innerHTML = renderHome(); bindHomeEvents(); break;
+    case 'tasks': main.innerHTML = renderTasks(); break;
+    case 'shop': main.innerHTML = renderShop(); break;
+    case 'report': main.innerHTML = renderReport(); break;
+    case 'wishes': main.innerHTML = renderWishes(); break;
+  }
+  // 滚动到顶部
+  main.scrollTop = 0;
+}
+
+// ============ 主页 ============
+function renderHome() {
+  const pet = DB.get('pet');
+  const coins = DB.get('coins', 0);
+  const inventory = DB.get('inventory', {});
+
+  // 兼容旧数据
+  if (typeof pet.exp !== 'number') pet.exp = 0;
+
+  const moodStatus = getMoodStatus(pet.mood);
+  const petClass = pet.mood < 40 ? 'sad' : (pet.mood > 80 ? 'happy' : '');
+  const growth = getGrowthInfo(pet.exp);
+
+  return `
+    <div class="pet-stage">
+      <div class="growth-badge">${growth.badge} ${growth.name} Lv.${growth.level}</div>
+      <div class="pet-display ${petClass}" id="petDisplay" style="font-size:${growth.size}px;">${pet.emoji}</div>
+      <div class="pet-name-label">${pet.name} ${moodStatus}</div>
+      <div class="growth-section">
+        <div class="growth-header">
+          <span class="growth-title">🌟 成长值</span>
+          <span class="growth-exp">${growth.isMax ? 'MAX' : growth.expInLevel + '/' + growth.expForNext}</span>
+        </div>
+        <div class="stat-track growth-track">
+          <div class="stat-fill growth-fill" style="width:${growth.progress}%"></div>
+        </div>
+        <div class="growth-desc">${growth.isMax ? '已经是最强状态啦！👑' : growth.desc + '，继续加油成长吧~'}</div>
+      </div>
+      <div class="stat-bars">
+        <div class="stat-bar">
+          <span class="stat-icon">😊</span>
+          <span class="stat-label">心情</span>
+          <div class="stat-track"><div class="stat-fill mood" style="width:${pet.mood}%"></div></div>
+        </div>
+        <div class="stat-bar">
+          <span class="stat-icon">🍖</span>
+          <span class="stat-label">饱食</span>
+          <div class="stat-track"><div class="stat-fill hunger" style="width:${pet.hunger}%"></div></div>
+        </div>
+        <div class="stat-bar">
+          <span class="stat-icon">💚</span>
+          <span class="stat-label">健康</span>
+          <div class="stat-track"><div class="stat-fill health" style="width:${pet.health}%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title">🎮 陪它玩一玩</div>
+      <div class="action-grid">
+        <button class="action-btn" onclick="openFeedMenu()">
+          <span class="action-icon">🍽️</span>
+          <span class="action-label">喂食</span>
+        </button>
+        <button class="action-btn" onclick="actionPlay()">
+          <span class="action-icon">🎾</span>
+          <span class="action-label">陪玩</span>
+        </button>
+        <button class="action-btn" onclick="actionHeal()">
+          <span class="action-icon">🏥</span>
+          <span class="action-label">治病</span>
+        </button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title">🔄 更换宠物</div>
+      <button class="action-btn" onclick="openPetChangeMenu()" style="width:100%;padding:14px;">
+        <span class="action-icon">🐾</span>
+        <span class="action-label">选择新的小伙伴</span>
+      </button>
+      <div style="font-size:12px;color:var(--text-light);margin-top:8px;text-align:center;">换宠物不会影响金币、积分和任务进度</div>
+    </div>
+    <div class="card">
+      <div class="section-title">🎒 我的背包</div>
+      ${renderInventoryMini(inventory)}
+    </div>
+  `;
+}
+
+function bindHomeEvents() {
+  // 可在此绑定额外事件
+}
+
+function getMoodStatus(mood) {
+  if (mood >= 80) return '😄';
+  if (mood >= 60) return '🙂';
+  if (mood >= 40) return '😐';
+  if (mood >= 20) return '😢';
+  return '😭';
+}
+
+function renderInventoryMini(inventory) {
+  const shop = DB.get('shop', []);
+  const items = Object.keys(inventory).filter(id => inventory[id] > 0);
+  if (items.length === 0) {
+    return '<div class="empty-state"><span class="empty-icon">📦</span>背包空空的，去商店买点东西吧~</div>';
+  }
+  return `
+    <div class="inventory-grid">
+      ${items.map(id => {
+        const item = shop.find(s => s.id === id);
+        if (!item) return '';
+        return `
+          <div class="inv-item" onclick="useItem('${id}')">
+            <span class="inv-emoji">${item.icon}</span>
+            <div class="inv-name">${item.name}</div>
+            <div class="inv-count">x${inventory[id]}</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+// ============ 喂食菜单 ============
+function openFeedMenu() {
+  const inventory = DB.get('inventory', {});
+  const shop = DB.get('shop', []);
+  const foods = shop.filter(s => s.type === 'food' && inventory[s.id] > 0);
+
+  if (foods.length === 0) {
+    toast('没有食物了，去商店买一些吧~');
+    Sound.play('error');
+    return;
+  }
+
+  const html = `
+    <div class="modal-title">🍽️ 选择食物</div>
+    <div class="inventory-grid">
+      ${foods.map(f => `
+        <div class="inv-item" onclick="useItem('${f.id}', true)">
+          <span class="inv-emoji">${f.icon}</span>
+          <div class="inv-name">${f.name}</div>
+          <div class="inv-count">x${inventory[f.id]}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">关闭</button>
+    </div>
+  `;
+  showModal(html);
+}
+
+function useItem(itemId, fromFeedMenu) {
+  const inventory = DB.get('inventory', {});
+  const shop = DB.get('shop', []);
+  const item = shop.find(s => s.id === itemId);
+  if (!item || !inventory[itemId] || inventory[itemId] <= 0) return;
+
+  const pet = DB.get('pet');
+
+  // 根据物品类型应用效果
+  let expGain = 0;
+  if (item.type === 'food') {
+    pet.hunger = Math.min(100, pet.hunger + 25);
+    pet.mood = Math.min(100, pet.mood + 10);
+    showPetReaction(`${pet.emoji}`, '好吃好吃！', 'happy');
+    Sound.play('eat');
+    addLog('🍽️', `喂${pet.name}吃${item.name}`, 0, 'feed');
+    expGain = 5;
+  } else if (item.type === 'toy') {
+    pet.mood = Math.min(100, pet.mood + 30);
+    pet.hunger = Math.max(0, pet.hunger - 5);
+    showPetReaction(`${pet.emoji}`, '好开心呀！', 'happy');
+    Sound.play('happy');
+    addLog('🎾', `用${item.name}陪${pet.name}玩`, 0, 'play');
+    expGain = 3;
+  } else if (item.type === 'medicine') {
+    pet.health = Math.min(100, pet.health + 35);
+    pet.mood = Math.max(0, pet.mood - 5);
+    showPetReaction(`${pet.emoji}`, '感觉好多了~', 'happy');
+    Sound.play('heal');
+    addLog('🏥', `给${pet.name}用${item.name}`, 0, 'heal');
+    expGain = 8;
+  }
+
+  inventory[itemId]--;
+  if (inventory[itemId] <= 0) delete inventory[itemId];
+  DB.set('inventory', inventory);
+  DB.set('pet', pet);
+
+  // 先导航再增加经验（addExp 可能触发升级提示，需要在页面渲染后）
+  if (fromFeedMenu) closeModal();
+  navigate('home');
+  if (expGain > 0) addExp(expGain);
+}
+
+// 陪玩（消耗体力，提升心情；如果有玩具可以选择用玩具）
+function actionPlay() {
+  const inventory = DB.get('inventory', {});
+  const shop = DB.get('shop', []);
+  const toys = shop.filter(s => s.type === 'toy' && inventory[s.id] > 0);
+  const pet = DB.get('pet');
+
+  if (toys.length > 0) {
+    // 弹窗选择玩具或直接玩耍
+    const html = `
+      <div class="modal-title">🎾 选择玩具</div>
+      <div class="inventory-grid">
+        <div class="inv-item" onclick="playDirect()">
+          <span class="inv-emoji">🤲</span>
+          <div class="inv-name">空手玩</div>
+          <div class="inv-count">+5心情</div>
+        </div>
+        ${toys.map(t => `
+          <div class="inv-item" onclick="useItem('${t.id}')">
+            <span class="inv-emoji">${t.icon}</span>
+            <div class="inv-name">${t.name}</div>
+            <div class="inv-count">x${inventory[t.id]}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeModal()">关闭</button>
+      </div>
+    `;
+    showModal(html);
+  } else {
+    playDirect();
+  }
+}
+
+function playDirect() {
+  const pet = DB.get('pet');
+  pet.mood = Math.min(100, pet.mood + 5);
+  pet.hunger = Math.max(0, pet.hunger - 3);
+  DB.set('pet', pet);
+  closeModal();
+  showPetReaction(pet.emoji, '嘿嘿，真好玩！', 'happy');
+  Sound.play('happy');
+  addLog('🎾', `陪${pet.name}玩耍`, 0, 'play');
+  navigate('home');
+  addExp(2);
+}
+
+function actionHeal() {
+  const inventory = DB.get('inventory', {});
+  const shop = DB.get('shop', []);
+  const meds = shop.filter(s => s.type === 'medicine' && inventory[s.id] > 0);
+  const pet = DB.get('pet');
+
+  if (meds.length === 0) {
+    toast('没有药品了，去商店买一些吧~');
+    Sound.play('error');
+    return;
+  }
+
+  const html = `
+    <div class="modal-title">🏥 选择药品</div>
+    <div class="inventory-grid">
+      ${meds.map(m => `
+        <div class="inv-item" onclick="useItem('${m.id}')">
+          <span class="inv-emoji">${m.icon}</span>
+          <div class="inv-name">${m.name}</div>
+          <div class="inv-count">x${inventory[m.id]}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">关闭</button>
+    </div>
+  `;
+  showModal(html);
+}
+
+// ============ 宠物反应气泡 ============
+function showPetReaction(emoji, text, mood) {
+  const bubble = document.getElementById('petBubble');
+  bubble.innerHTML = `<span class="bubble-emoji">${emoji}</span>${text}`;
+  bubble.style.display = 'block';
+  setTimeout(() => bubble.classList.add('show'), 10);
+  setTimeout(() => {
+    bubble.classList.remove('show');
+    setTimeout(() => bubble.style.display = 'none', 300);
+  }, 1800);
+
+  // 给宠物添加动画
+  const petEl = document.getElementById('petDisplay');
+  if (petEl) {
+    petEl.classList.remove('sad', 'happy');
+    if (mood === 'happy') {
+      petEl.classList.add('happy');
+      setTimeout(() => petEl.classList.remove('happy'), 600);
+    } else if (mood === 'sad') {
+      petEl.classList.add('sad');
+      setTimeout(() => petEl.classList.remove('sad'), 500);
+    }
+  }
+}
+
+// ============ 任务页 ============
+function renderTasks() {
+  const tasks = DB.get('tasks', []);
+  const editMode = state.editMode;
+  const tab = state.currentTaskTab;
+
+  const categories = [
+    { key: 'all', label: '全部' },
+    { key: 'study', label: '📚 学习' },
+    { key: 'house', label: '🧹 家务' },
+    { key: 'sport', label: '🤸 运动' },
+    { key: 'penalty', label: '⚠️ 扣分' }
+  ];
+
+  let filtered = tasks;
+  if (tab !== 'all') filtered = tasks.filter(t => t.cat === tab);
+
+  return `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div class="section-title" style="margin-bottom:0;">📋 任务清单</div>
+        <button class="btn btn-primary" style="flex:none;padding:6px 14px;font-size:13px;" onclick="toggleEditMode()">
+          ${editMode ? '✅ 完成' : '✏️ 编辑'}
+        </button>
+      </div>
+      <div class="task-category-tabs">
+        ${categories.map(c => `
+          <button class="tab-btn ${tab === c.key ? 'active' : ''}" onclick="switchTaskTab('${c.key}')">${c.label}</button>
+        `).join('')}
+      </div>
+      <div id="taskList">
+        ${filtered.length === 0 ? '<div class="empty-state"><span class="empty-icon">📭</span>这个分类还没有任务</div>' :
+          filtered.map(t => renderTaskRow(t, editMode)).join('')}
+      </div>
+      ${editMode ? `
+        <button class="add-task-btn" onclick="addTask('${tab}')">➕ 添加新任务</button>
+      ` : ''}
+    </div>
+  `;
+}
+
+function renderTaskRow(t, editMode) {
+  if (editMode) {
+    return `
+      <div class="task-item">
+        <span class="task-icon">${t.icon}</span>
+        <div class="task-info">
+          <div class="task-title">${t.title}</div>
+          <div class="task-desc">${t.desc}</div>
+        </div>
+        <span class="task-score ${t.type}">${t.score > 0 ? '+' : ''}${t.score}</span>
+        <div class="task-actions-edit">
+          <button class="edit-btn" onclick="editTask('${t.id}')">✏️</button>
+          <button class="delete-btn" onclick="deleteTask('${t.id}')">🗑️</button>
+        </div>
+      </div>
+    `;
+  }
+  return `
+    <div class="task-item">
+      <span class="task-icon">${t.icon}</span>
+      <div class="task-info">
+        <div class="task-title">${t.title}</div>
+        <div class="task-desc">${t.desc}</div>
+      </div>
+      <span class="task-score ${t.type}">${t.score > 0 ? '+' : ''}${t.score}🪙</span>
+      <button class="task-btn ${t.type === 'positive' ? 'done' : 'deduct'}" onclick="completeTask('${t.id}')">
+        ${t.type === 'positive' ? '完成' : '扣分'}
+      </button>
+    </div>
+  `;
+}
+
+function switchTaskTab(tab) {
+  state.currentTaskTab = tab;
+  navigate('tasks');
+}
+
+function toggleEditMode() {
+  state.editMode = !state.editMode;
+  navigate('tasks');
+}
+
+function completeTask(taskId) {
+  const tasks = DB.get('tasks', []);
+  const task = tasks.find(t => t.id === taskId);
+  if (!task) return;
+
+  const coins = DB.get('coins', 0);
+  const totalScore = DB.get('totalScore', 0);
+  const pet = DB.get('pet');
+
+  const newCoins = coins + task.score;
+  if (newCoins < 0) {
+    toast('金币不足，无法扣分！');
+    Sound.play('error');
+    return;
+  }
+
+  DB.set('coins', newCoins);
+  updateCoins();
+
+  if (task.type === 'positive') {
+    DB.set('totalScore', totalScore + task.score);
+    // 宠物开心
+    pet.mood = Math.min(100, pet.mood + 3);
+    DB.set('pet', pet);
+    Sound.play('success');
+    showPetReaction(pet.emoji, '太棒了！', 'happy');
+    toast(`完成「${task.title}」+${task.score}🪙`);
+    // 完成任务获得经验值（积分的1.5倍，至少2点）
+    addExp(Math.max(2, Math.ceil(task.score * 1.5)));
+  } else {
+    // 扣分 -> 宠物难过
+    pet.mood = Math.max(0, pet.mood - 15);
+    DB.set('pet', pet);
+    Sound.play('sad');
+    showPetReaction(pet.emoji, '呜呜...', 'sad');
+    toast(`「${task.title}」${task.score}🪙`);
+  }
+
+  addLog(task.icon, task.title, task.score, task.type);
+}
+
+// ============ 任务编辑 ============
+function addTask(defaultCat) {
+  const cat = (defaultCat && defaultCat !== 'all') ? defaultCat : 'study';
+  const html = `
+    <div class="modal-title">➕ 添加新任务</div>
+    <div class="modal-field">
+      <label>任务图标（输入emoji）</label>
+      <input type="text" id="newTaskIcon" placeholder="如：🌟" maxlength="4" value="⭐">
+    </div>
+    <div class="modal-field">
+      <label>任务名称</label>
+      <input type="text" id="newTaskTitle" placeholder="如：整理书包">
+    </div>
+    <div class="modal-field">
+      <label>任务描述</label>
+      <input type="text" id="newTaskDesc" placeholder="如：每天整理好书包">
+    </div>
+    <div class="modal-field">
+      <label>分类</label>
+      <select id="newTaskCat">
+        <option value="study" ${cat === 'study' ? 'selected' : ''}>📚 学习</option>
+        <option value="house" ${cat === 'house' ? 'selected' : ''}>🧹 家务</option>
+        <option value="sport" ${cat === 'sport' ? 'selected' : ''}>🤸 运动</option>
+        <option value="penalty" ${cat === 'penalty' ? 'selected' : ''}>⚠️ 扣分</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>积分（正数加分，负数扣分）</label>
+      <input type="number" id="newTaskScore" placeholder="如：5 或 -5" value="5">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveNewTask()">保存</button>
+    </div>
+  `;
+  showModal(html);
+}
+
+function saveNewTask() {
+  const icon = document.getElementById('newTaskIcon').value.trim() || '⭐';
+  const title = document.getElementById('newTaskTitle').value.trim();
+  const desc = document.getElementById('newTaskDesc').value.trim();
+  const cat = document.getElementById('newTaskCat').value;
+  let score = parseInt(document.getElementById('newTaskScore').value);
+
+  if (!title) { toast('请填写任务名称'); return; }
+  if (isNaN(score)) score = 5;
+
+  const type = cat === 'penalty' || score < 0 ? 'negative' : 'positive';
+  if (cat === 'penalty' && score > 0) score = -Math.abs(score);
+
+  const tasks = DB.get('tasks', []);
+  tasks.push({
+    id: 't' + Date.now(),
+    cat, type, icon, title, desc, score
+  });
+  DB.set('tasks', tasks);
+  closeModal();
+  navigate('tasks');
+  toast('任务添加成功！');
+}
+
+function editTask(taskId) {
+  const tasks = DB.get('tasks', []);
+  const task = tasks.find(t => t.id === taskId);
+  if (!task) return;
+
+  const html = `
+    <div class="modal-title">✏️ 编辑任务</div>
+    <div class="modal-field">
+      <label>任务图标</label>
+      <input type="text" id="editTaskIcon" value="${task.icon}" maxlength="4">
+    </div>
+    <div class="modal-field">
+      <label>任务名称</label>
+      <input type="text" id="editTaskTitle" value="${task.title}">
+    </div>
+    <div class="modal-field">
+      <label>任务描述</label>
+      <input type="text" id="editTaskDesc" value="${task.desc}">
+    </div>
+    <div class="modal-field">
+      <label>分类</label>
+      <select id="editTaskCat">
+        <option value="study" ${task.cat === 'study' ? 'selected' : ''}>📚 学习</option>
+        <option value="house" ${task.cat === 'house' ? 'selected' : ''}>🧹 家务</option>
+        <option value="sport" ${task.cat === 'sport' ? 'selected' : ''}>🤸 运动</option>
+        <option value="penalty" ${task.cat === 'penalty' ? 'selected' : ''}>⚠️ 扣分</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>积分（正数加分，负数扣分）</label>
+      <input type="number" id="editTaskScore" value="${task.score}">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveEditTask('${taskId}')">保存</button>
+    </div>
+  `;
+  showModal(html);
+}
+
+function saveEditTask(taskId) {
+  const tasks = DB.get('tasks', []);
+  const idx = tasks.findIndex(t => t.id === taskId);
+  if (idx === -1) return;
+
+  const icon = document.getElementById('editTaskIcon').value.trim() || '⭐';
+  const title = document.getElementById('editTaskTitle').value.trim();
+  const desc = document.getElementById('editTaskDesc').value.trim();
+  const cat = document.getElementById('editTaskCat').value;
+  let score = parseInt(document.getElementById('editTaskScore').value);
+
+  if (!title) { toast('请填写任务名称'); return; }
+  if (isNaN(score)) score = 5;
+
+  const type = cat === 'penalty' || score < 0 ? 'negative' : 'positive';
+  if (cat === 'penalty' && score > 0) score = -Math.abs(score);
+
+  tasks[idx] = { ...tasks[idx], icon, title, desc, cat, type, score };
+  DB.set('tasks', tasks);
+  closeModal();
+  navigate('tasks');
+  toast('修改成功！');
+}
+
+function deleteTask(taskId) {
+  if (!confirm('确定删除这个任务吗？')) return;
+  let tasks = DB.get('tasks', []);
+  tasks = tasks.filter(t => t.id !== taskId);
+  DB.set('tasks', tasks);
+  navigate('tasks');
+  toast('已删除');
+}
+
+// ============ 商店页 ============
+function renderShop() {
+  const shop = DB.get('shop', []);
+  const coins = DB.get('coins', 0);
+  const inventory = DB.get('inventory', {});
+  const editMode = state.editMode;
+
+  const types = [
+    { key: 'food', label: '🍎 食物' },
+    { key: 'toy', label: '🧸 玩具' },
+    { key: 'medicine', label: '💊 药品' }
+  ];
+
+  return `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div class="section-title" style="margin-bottom:0;">🛒 商店</div>
+        <button class="btn btn-primary" style="flex:none;padding:6px 14px;font-size:13px;" onclick="toggleShopEditMode()">
+          ${state.shopEditMode ? '✅ 完成' : '✏️ 编辑'}
+        </button>
+      </div>
+      ${types.map(t => {
+        const items = shop.filter(s => s.type === t.key);
+        if (items.length === 0) return '';
+        return `
+          <div style="margin-bottom:14px;">
+            <div style="font-size:14px;font-weight:700;margin-bottom:8px;color:var(--text);">${t.label}</div>
+            <div class="shop-grid">
+              ${items.map(s => renderShopItem(s, coins, inventory, state.shopEditMode)).join('')}
+            </div>
+          </div>
+        `;
+      }).join('')}
+      ${state.shopEditMode ? `
+        <button class="add-task-btn" onclick="addShopItem()">➕ 添加新商品</button>
+      ` : ''}
+    </div>
+  `;
+}
+
+function renderShopItem(s, coins, inventory, editMode) {
+  const count = inventory[s.id] || 0;
+  const canAfford = coins >= s.price;
+  return `
+    <div class="shop-item">
+      ${count > 0 ? `<span class="inventory-badge">x${count}</span>` : ''}
+      <span class="shop-emoji">${s.icon}</span>
+      <div class="shop-name">${s.name}</div>
+      <div class="shop-type">${s.type === 'food' ? '🍎食物' : s.type === 'toy' ? '🧸玩具' : '💊药品'}</div>
+      <div class="shop-price">🪙 ${s.price}</div>
+      ${editMode ? `
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-primary" style="flex:1;padding:6px;font-size:12px;" onclick="editShopItem('${s.id}')">✏️</button>
+          <button class="btn btn-cancel" style="flex:1;padding:6px;font-size:12px;" onclick="deleteShopItem('${s.id}')">🗑️</button>
+        </div>
+      ` : `
+        <button class="buy-btn" onclick="buyItem('${s.id}')" ${!canAfford ? 'disabled' : ''}>
+          ${canAfford ? '购买' : '金币不足'}
+        </button>
+      `}
+    </div>
+  `;
+}
+
+function toggleShopEditMode() {
+  state.shopEditMode = !state.shopEditMode;
+  navigate('shop');
+}
+
+function buyItem(itemId) {
+  const shop = DB.get('shop', []);
+  const item = shop.find(s => s.id === itemId);
+  if (!item) return;
+
+  const coins = DB.get('coins', 0);
+  if (coins < item.price) {
+    toast('金币不足，无法购买！');
+    Sound.play('error');
+    return;
+  }
+
+  DB.set('coins', coins - item.price);
+  const inventory = DB.get('inventory', {});
+  inventory[itemId] = (inventory[itemId] || 0) + 1;
+  DB.set('inventory', inventory);
+
+  updateCoins();
+  Sound.play('buy');
+  toast(`购买「${item.name}」成功！`);
+  navigate('shop');
+}
+
+function addShopItem() {
+  const html = `
+    <div class="modal-title">➕ 添加商品</div>
+    <div class="modal-field">
+      <label>商品图标（输入emoji）</label>
+      <input type="text" id="newShopIcon" placeholder="如：🍉" maxlength="4" value="🍬">
+    </div>
+    <div class="modal-field">
+      <label>商品名称</label>
+      <input type="text" id="newShopName" placeholder="如：棒棒糖">
+    </div>
+    <div class="modal-field">
+      <label>类型</label>
+      <select id="newShopType">
+        <option value="food">🍎 食物</option>
+        <option value="toy">🧸 玩具</option>
+        <option value="medicine">💊 药品</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>价格（金币）</label>
+      <input type="number" id="newShopPrice" placeholder="如：5" value="5">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveNewShopItem()">保存</button>
+    </div>
+  `;
+  showModal(html);
+}
+
+function saveNewShopItem() {
+  const icon = document.getElementById('newShopIcon').value.trim() || '🍬';
+  const name = document.getElementById('newShopName').value.trim();
+  const type = document.getElementById('newShopType').value;
+  const price = parseInt(document.getElementById('newShopPrice').value) || 5;
+
+  if (!name) { toast('请填写商品名称'); return; }
+
+  const shop = DB.get('shop', []);
+  shop.push({ id: 's' + Date.now(), type, icon, name, price });
+  DB.set('shop', shop);
+  closeModal();
+  navigate('shop');
+  toast('商品添加成功！');
+}
+
+function editShopItem(itemId) {
+  const shop = DB.get('shop', []);
+  const item = shop.find(s => s.id === itemId);
+  if (!item) return;
+
+  const html = `
+    <div class="modal-title">✏️ 编辑商品</div>
+    <div class="modal-field">
+      <label>商品图标</label>
+      <input type="text" id="editShopIcon" value="${item.icon}" maxlength="4">
+    </div>
+    <div class="modal-field">
+      <label>商品名称</label>
+      <input type="text" id="editShopName" value="${item.name}">
+    </div>
+    <div class="modal-field">
+      <label>类型</label>
+      <select id="editShopType">
+        <option value="food" ${item.type === 'food' ? 'selected' : ''}>🍎 食物</option>
+        <option value="toy" ${item.type === 'toy' ? 'selected' : ''}>🧸 玩具</option>
+        <option value="medicine" ${item.type === 'medicine' ? 'selected' : ''}>💊 药品</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>价格（金币）</label>
+      <input type="number" id="editShopPrice" value="${item.price}">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveEditShopItem('${itemId}')">保存</button>
+    </div>
+  `;
+  showModal(html);
+}
+
+function saveEditShopItem(itemId) {
+  const shop = DB.get('shop', []);
+  const idx = shop.findIndex(s => s.id === itemId);
+  if (idx === -1) return;
+
+  const icon = document.getElementById('editShopIcon').value.trim() || '🍬';
+  const name = document.getElementById('editShopName').value.trim();
+  const type = document.getElementById('editShopType').value;
+  const price = parseInt(document.getElementById('editShopPrice').value) || 5;
+
+  if (!name) { toast('请填写商品名称'); return; }
+
+  shop[idx] = { ...shop[idx], icon, name, type, price };
+  DB.set('shop', shop);
+  closeModal();
+  navigate('shop');
+  toast('修改成功！');
+}
+
+function deleteShopItem(itemId) {
+  if (!confirm('确定删除这个商品吗？')) return;
+  let shop = DB.get('shop', []);
+  shop = shop.filter(s => s.id !== itemId);
+  DB.set('shop', shop);
+  navigate('shop');
+  toast('已删除');
+}
+
+// ============ 报表页 ============
+function renderReport() {
+  const logs = DB.get('logs', []);
+  const today = todayKey();
+
+  // 今日数据
+  const todayLogs = logs.filter(l => l.date === today);
+  const todayScore = todayLogs.filter(l => l.scoreType !== 'feed' && l.scoreType !== 'play' && l.scoreType !== 'heal')
+    .reduce((sum, l) => sum + l.score, 0);
+  const todayPositive = todayLogs.filter(l => l.score > 0).reduce((s, l) => s + l.score, 0);
+  const todayNegative = todayLogs.filter(l => l.score < 0).reduce((s, l) => s + l.score, 0);
+
+  // 周数据（近7天）
+  const weekData = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const dayLogs = logs.filter(l => l.date === key && l.scoreType !== 'feed' && l.scoreType !== 'play' && l.scoreType !== 'heal');
+    const dayScore = dayLogs.reduce((sum, l) => sum + l.score, 0);
+    weekData.push({
+      label: `${d.getMonth() + 1}/${d.getDate()}`,
+      score: dayScore,
+      isToday: key === today
+    });
+  }
+
+  const maxAbs = Math.max(10, ...weekData.map(d => Math.abs(d.score)));
+
+  const totalScore = DB.get('totalScore', 0);
+
+  // 今日明细
+  const todayDetails = [...todayLogs].reverse();
+
+  return `
+    <div class="report-summary">
+      <div class="summary-card">
+        <div class="summary-value">${todayScore >= 0 ? '+' : ''}${todayScore}</div>
+        <div class="summary-label">今日积分</div>
+      </div>
+      <div class="summary-card alt">
+        <div class="summary-value">${totalScore}</div>
+        <div class="summary-label">累计总积分</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title">📊 近7天积分</div>
+      <div class="week-chart">
+        ${weekData.map(d => `
+          <div class="bar-col">
+            <div class="bar ${d.score < 0 ? 'negative' : ''}" style="height:${Math.max(4, (Math.abs(d.score) / maxAbs) * 100)}%">
+              <span class="bar-value">${d.score !== 0 ? d.score : ''}</span>
+            </div>
+            <div class="bar-label" style="${d.isToday ? 'color:var(--primary);font-weight:700;' : ''}">${d.label}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div style="display:flex;gap:12px;margin-top:12px;font-size:12px;color:var(--text-light);justify-content:center;">
+        <span>🟢 加分：${todayPositive}</span>
+        <span>🔴 扣分：${todayNegative}</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title">📝 今日明细</div>
+      <div class="log-list">
+        ${todayDetails.length === 0 ? '<div class="empty-state"><span class="empty-icon">📋</span>今天还没有记录哦</div>' :
+          todayDetails.map(l => `
+            <div class="log-item">
+              <span class="log-time">${l.time}</span>
+              <span class="log-icon">${l.icon}</span>
+              <span class="log-title">${l.title}</span>
+              ${l.score !== 0 ? `<span class="log-score ${l.score > 0 ? 'positive' : 'negative'}">${l.score > 0 ? '+' : ''}${l.score}</span>` : ''}
+            </div>
+          `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ============ 心愿页 ============
+function renderWishes() {
+  const wishes = DB.get('wishes', []);
+  const totalScore = DB.get('totalScore', 0);
+  const redeemed = DB.get('redeemedWishes', []);
+
+  return `
+    <div class="total-score-banner">
+      <div class="total-value">${totalScore}</div>
+      <div class="total-label">🌟 可用总积分（兑换心愿后扣除）</div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div class="section-title" style="margin-bottom:0;">🌟 心愿清单</div>
+        <button class="btn btn-primary" style="flex:none;padding:6px 14px;font-size:13px;" onclick="toggleWishEditMode()">
+          ${state.wishEditMode ? '✅ 完成' : '✏️ 编辑'}
+        </button>
+      </div>
+      ${wishes.length === 0 ? '<div class="empty-state"><span class="empty-icon">🌟</span>还没有心愿，添加一个吧</div>' :
+        wishes.map(w => {
+          const isRedeemed = redeemed.includes(w.id);
+          const canAfford = totalScore >= w.cost;
+          return `
+            <div class="wish-item">
+              <span class="wish-emoji">${w.icon}</span>
+              <div class="wish-info">
+                <div class="wish-title">${w.title}</div>
+                <div class="wish-cost">需要 ${w.cost} 积分</div>
+              </div>
+              ${state.wishEditMode ? `
+                <div style="display:flex;gap:6px;">
+                  <button class="btn btn-primary" style="padding:6px 10px;font-size:12px;" onclick="editWish('${w.id}')">✏️</button>
+                  <button class="btn btn-cancel" style="padding:6px 10px;font-size:12px;" onclick="deleteWish('${w.id}')">🗑️</button>
+                </div>
+              ` : (isRedeemed ? `
+                <span class="wish-redeemed">已兑换</span>
+              ` : `
+                <button class="wish-btn" onclick="redeemWish('${w.id}')" ${!canAfford ? 'disabled' : ''}>
+                  ${canAfford ? '兑换' : '积分不足'}
+                </button>
+              `)}
+            </div>
+          `;
+        }).join('')}
+      ${state.wishEditMode ? `
+        <button class="add-task-btn" onclick="addWish()">➕ 添加新心愿</button>
+      ` : ''}
+    </div>
+    ${redeemed.length > 0 ? `
+      <div class="card">
+        <div class="section-title">🎁 已兑换的心愿</div>
+        ${redeemed.map(id => {
+          const w = wishes.find(x => x.id === id);
+          return w ? `<div class="log-item"><span class="log-icon">${w.icon}</span><span class="log-title">${w.title}</span><span class="log-score positive">已实现</span></div>` : '';
+        }).join('')}
+      </div>
+    ` : ''}
+  `;
+}
+
+function toggleWishEditMode() {
+  state.wishEditMode = !state.wishEditMode;
+  navigate('wishes');
+}
+
+function redeemWish(wishId) {
+  const wishes = DB.get('wishes', []);
+  const wish = wishes.find(w => w.id === wishId);
+  if (!wish) return;
+
+  const totalScore = DB.get('totalScore', 0);
+  if (totalScore < wish.cost) {
+    toast('积分不足，继续努力！');
+    Sound.play('error');
+    return;
+  }
+
+  if (!confirm(`确定用 ${wish.cost} 积分兑换「${wish.title}」吗？`)) return;
+
+  DB.set('totalScore', totalScore - wish.cost);
+  const redeemed = DB.get('redeemedWishes', []);
+  redeemed.push(wishId);
+  DB.set('redeemedWishes', redeemed);
+
+  addLog('🎁', `兑换心愿：${wish.title}`, -wish.cost, 'redeem');
+  Sound.play('success');
+  toast(`🎉 心愿「${wish.title}」兑换成功！`);
+  navigate('wishes');
+}
+
+function addWish() {
+  const html = `
+    <div class="modal-title">➕ 添加心愿</div>
+    <div class="modal-field">
+      <label>心愿图标（输入emoji）</label>
+      <input type="text" id="newWishIcon" placeholder="如：🚗" maxlength="4" value="🎁">
+    </div>
+    <div class="modal-field">
+      <label>心愿内容</label>
+      <input type="text" id="newWishTitle" placeholder="如：买一个新玩具">
+    </div>
+    <div class="modal-field">
+      <label>需要积分</label>
+      <input type="number" id="newWishCost" placeholder="如：100" value="100">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveNewWish()">保存</button>
+    </div>
+  `;
+  showModal(html);
+}
+
+function saveNewWish() {
+  const icon = document.getElementById('newWishIcon').value.trim() || '🎁';
+  const title = document.getElementById('newWishTitle').value.trim();
+  const cost = parseInt(document.getElementById('newWishCost').value) || 100;
+
+  if (!title) { toast('请填写心愿内容'); return; }
+
+  const wishes = DB.get('wishes', []);
+  wishes.push({ id: 'w' + Date.now(), icon, title, cost });
+  DB.set('wishes', wishes);
+  closeModal();
+  navigate('wishes');
+  toast('心愿添加成功！');
+}
+
+function editWish(wishId) {
+  const wishes = DB.get('wishes', []);
+  const wish = wishes.find(w => w.id === wishId);
+  if (!wish) return;
+
+  const html = `
+    <div class="modal-title">✏️ 编辑心愿</div>
+    <div class="modal-field">
+      <label>心愿图标</label>
+      <input type="text" id="editWishIcon" value="${wish.icon}" maxlength="4">
+    </div>
+    <div class="modal-field">
+      <label>心愿内容</label>
+      <input type="text" id="editWishTitle" value="${wish.title}">
+    </div>
+    <div class="modal-field">
+      <label>需要积分</label>
+      <input type="number" id="editWishCost" value="${wish.cost}">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveEditWish('${wishId}')">保存</button>
+    </div>
+  `;
+  showModal(html);
+}
+
+function saveEditWish(wishId) {
+  const wishes = DB.get('wishes', []);
+  const idx = wishes.findIndex(w => w.id === wishId);
+  if (idx === -1) return;
+
+  const icon = document.getElementById('editWishIcon').value.trim() || '🎁';
+  const title = document.getElementById('editWishTitle').value.trim();
+  const cost = parseInt(document.getElementById('editWishCost').value) || 100;
+
+  if (!title) { toast('请填写心愿内容'); return; }
+
+  wishes[idx] = { ...wishes[idx], icon, title, cost };
+  DB.set('wishes', wishes);
+  closeModal();
+  navigate('wishes');
+  toast('修改成功！');
+}
+
+function deleteWish(wishId) {
+  if (!confirm('确定删除这个心愿吗？')) return;
+  let wishes = DB.get('wishes', []);
+  wishes = wishes.filter(w => w.id !== wishId);
+  DB.set('wishes', wishes);
+  navigate('wishes');
+  toast('已删除');
+}
+
+// ============ 日志记录 ============
+function addLog(icon, title, score, scoreType) {
+  const logs = DB.get('logs', []);
+  const now = new Date();
+  logs.push({
+    date: todayKey(),
+    time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+    icon, title, score, scoreType
+  });
+  // 保留最近500条
+  if (logs.length > 500) logs = logs.slice(-500);
+  DB.set('logs', logs);
+}
+
+// ============ 弹窗 ============
+function showModal(html) {
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('modalOverlay').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').style.display = 'none';
+}
+
+// 点击遮罩关闭
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ============ Toast ============
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => el.classList.add('show'), 10);
+  setTimeout(() => {
+    el.classList.remove('show');
+    setTimeout(() => el.style.display = 'none', 300);
+  }, 2200);
+}
+
+// ============ 音效系统（Web Audio API 合成） ============
+const Sound = {
+  ctx: null,
+  init() {
+    if (!this.ctx) {
+      try {
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      } catch(e) { console.warn('Audio not supported'); }
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  },
+  play(type) {
+    this.init();
+    if (!this.ctx) return;
+    switch(type) {
+      case 'eat': this.eatSound(); break;
+      case 'success': this.successSound(); break;
+      case 'happy': this.happySound(); break;
+      case 'sad': this.sadSound(); break;
+      case 'error': this.errorSound(); break;
+      case 'buy': this.buySound(); break;
+      case 'heal': this.healSound(); break;
+      case 'levelup': this.levelupSound(); break;
+    }
+  },
+  // 播放单个音符
+  note(freq, startTime, duration, type = 'sine', volume = 0.3) {
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(volume, startTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(startTime);
+    osc.stop(startTime + duration);
+  },
+  eatSound() {
+    const t = this.ctx.currentTime;
+    // 咀嚼声 - 短促的音
+    this.note(400, t, 0.08, 'square', 0.15);
+    this.note(350, t + 0.1, 0.08, 'square', 0.15);
+    this.note(300, t + 0.2, 0.1, 'square', 0.12);
+    this.note(500, t + 0.35, 0.15, 'sine', 0.2);
+  },
+  successSound() {
+    const t = this.ctx.currentTime;
+    // 上升音阶 do-mi-sol-do
+    this.note(523, t, 0.12, 'sine', 0.25);
+    this.note(659, t + 0.1, 0.12, 'sine', 0.25);
+    this.note(784, t + 0.2, 0.12, 'sine', 0.25);
+    this.note(1047, t + 0.3, 0.3, 'sine', 0.3);
+  },
+  happySound() {
+    const t = this.ctx.currentTime;
+    this.note(659, t, 0.1, 'triangle', 0.2);
+    this.note(784, t + 0.08, 0.1, 'triangle', 0.2);
+    this.note(988, t + 0.16, 0.2, 'triangle', 0.25);
+    this.note(1319, t + 0.3, 0.3, 'triangle', 0.2);
+  },
+  sadSound() {
+    const t = this.ctx.currentTime;
+    // 下降音
+    this.note(440, t, 0.2, 'sine', 0.2);
+    this.note(392, t + 0.15, 0.2, 'sine', 0.2);
+    this.note(349, t + 0.3, 0.4, 'sine', 0.2);
+  },
+  errorSound() {
+    const t = this.ctx.currentTime;
+    this.note(200, t, 0.15, 'sawtooth', 0.15);
+    this.note(150, t + 0.1, 0.2, 'sawtooth', 0.15);
+  },
+  buySound() {
+    const t = this.ctx.currentTime;
+    // 金币叮声
+    this.note(988, t, 0.08, 'triangle', 0.2);
+    this.note(1319, t + 0.05, 0.08, 'triangle', 0.2);
+    this.note(1568, t + 0.1, 0.25, 'triangle', 0.25);
+  },
+  healSound() {
+    const t = this.ctx.currentTime;
+    // 温柔的上升音
+    this.note(523, t, 0.15, 'sine', 0.2);
+    this.note(659, t + 0.12, 0.15, 'sine', 0.2);
+    this.note(784, t + 0.24, 0.3, 'sine', 0.25);
+  },
+  levelupSound() {
+    const t = this.ctx.currentTime;
+    // 欢快的上升音阶 + 闪亮高音
+    this.note(523, t, 0.1, 'triangle', 0.25);
+    this.note(659, t + 0.08, 0.1, 'triangle', 0.25);
+    this.note(784, t + 0.16, 0.1, 'triangle', 0.25);
+    this.note(1047, t + 0.24, 0.1, 'triangle', 0.3);
+    this.note(1319, t + 0.32, 0.15, 'triangle', 0.3);
+    this.note(1568, t + 0.42, 0.4, 'triangle', 0.35);
+  }
+};
+
+// 首次点击解锁音频
+document.addEventListener('click', function unlockAudio() {
+  Sound.init();
+  document.removeEventListener('click', unlockAudio);
+}, { once: true });
+
+// ============ 启动 ============
+document.addEventListener('DOMContentLoaded', init);
+
+</script>
+</body>
+</html>
